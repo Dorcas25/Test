@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workplace Effectiveness Diagnostic — AVECGAZELLE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FAF9F6;
+    --panel:#FFFFFF;
+    --ink:#1C1730;
+    --ink-soft:#57506B;
+    --brand:#5B3DF0;
+    --brand-deep:#3A2A8C;
+    --accent:#F0A83C;
+    --success:#2E9E56;
+    --danger:#D9483D;
+    --line:#E6E3DC;
+    --radius:4px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Inter',-apple-system,sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3,.serif{font-family:'Fraunces',serif;}
+  .app{max-width:760px;margin:0 auto;padding:24px 20px 80px;}
+  .screen{display:none;}
+  .screen.active{display:block;}
+
+  /* ---- top bar ---- */
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 0 18px;
+  }
+  .brand-logo{height:26px;width:auto;display:block;}
+  .timer{
+    font-variant-numeric:tabular-nums;
+    font-weight:600;
+    font-size:15px;
+    padding:6px 14px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    color:var(--ink);
+    background:var(--panel);
+  }
+  .timer.low{color:var(--danger);border-color:var(--danger);}
+  .progress-track{
+    height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:36px;
+  }
+  .progress-fill{height:100%;background:var(--brand);transition:width .3s ease;}
+
+  /* ---- landing ---- */
+  .hero{padding:28px 0 8px;}
+  .hero .eyebrow{
+    color:var(--brand-deep);font-weight:600;font-size:14px;letter-spacing:.01em;margin-bottom:10px;
+  }
+  .hero h1{
+    font-size:38px;line-height:1.08;font-weight:600;margin:0 0 14px;color:var(--ink);
+  }
+  .hero p.lede{font-size:17px;color:var(--ink-soft);max-width:52ch;margin:0 0 28px;}
+  .stat-row{display:flex;gap:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line);margin-bottom:28px;}
+  .stat{flex:1;padding:16px 0;border-right:1px solid var(--line);}
+  .stat:last-child{border-right:none;}
+  .stat .num{font-family:'Fraunces',serif;font-size:26px;font-weight:600;display:block;color:var(--brand);}
+  .stat .lab{font-size:13px;color:var(--ink-soft);}
+
+  .card{
+    background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;margin-bottom:20px;
+  }
+  label.field-label{display:block;font-size:13px;font-weight:600;color:var(--ink-soft);margin-bottom:6px;}
+  input[type=text],input[type=email]{
+    width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:var(--radius);
+    font-size:15px;font-family:inherit;margin-bottom:16px;background:var(--bg);
+  }
+  input:focus,button:focus,.opt:focus-within{outline:2px solid var(--brand);outline-offset:2px;}
+
+  ul.info-list{margin:0;padding:0;list-style:none;}
+  ul.info-list li{padding:10px 0;border-bottom:1px solid var(--line);font-size:14.5px;color:var(--ink-soft);display:flex;gap:10px;}
+  ul.info-list li:last-child{border-bottom:none;}
+  ul.info-list li b{color:var(--ink);min-width:20px;}
+
+  .btn{
+    display:inline-block;background:var(--brand);color:#fff;border:none;
+    padding:13px 26px;border-radius:var(--radius);font-size:15px;font-weight:600;
+    cursor:pointer;font-family:inherit;
+  }
+  .btn:hover{background:var(--brand-deep);}
+  .btn.secondary{background:transparent;color:var(--brand-deep);border:1px solid var(--line);}
+  .btn.secondary:hover{border-color:var(--brand);}
+  .btn:disabled{background:var(--line);color:#9a94ac;cursor:not-allowed;}
+  .btn-row{display:flex;justify-content:space-between;align-items:center;margin-top:28px;gap:12px;}
+
+  a.link-quiet{color:var(--brand-deep);font-size:13.5px;text-decoration:underline;cursor:pointer;}
+
+  /* ---- question screens ---- */
+  .section-label{
+    font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;
+    color:var(--brand-deep);margin-bottom:6px;
+  }
+  .q-count{font-size:13px;color:var(--ink-soft);margin-bottom:20px;}
+  .scenario{font-size:17px;line-height:1.6;margin:0 0 22px;color:var(--ink);}
+  .options{display:flex;flex-direction:column;gap:10px;margin-bottom:8px;}
+  .opt{
+    display:flex;align-items:flex-start;gap:12px;padding:14px 16px;
+    border:1px solid var(--line);border-radius:var(--radius);cursor:pointer;
+    background:var(--panel);transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover{border-color:var(--brand);}
+  .opt.selected{border-color:var(--brand);background:#F3F0FF;}
+  .opt input{margin-top:2px;accent-color:var(--brand);}
+  .opt .opt-text{font-size:15px;}
+  .likert-row{display:flex;gap:8px;justify-content:space-between;margin-bottom:8px;}
+  .likert-opt{
+    flex:1;text-align:center;padding:14px 4px;border:1px solid var(--line);border-radius:var(--radius);
+    cursor:pointer;font-size:13px;color:var(--ink-soft);
+  }
+  .likert-opt.selected{border-color:var(--brand);background:#F3F0FF;color:var(--ink);font-weight:600;}
+  .likert-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--ink-soft);margin-bottom:14px;}
+
+  /* ---- results ---- */
+  .score-block{display:flex;align-items:baseline;gap:18px;margin-bottom:6px;flex-wrap:wrap;}
+  .score-num{font-family:'Fraunces',serif;font-size:64px;font-weight:600;color:var(--brand);line-height:1;}
+  .level-badge{
+    display:inline-block;padding:6px 14px;border-radius:999px;font-size:13.5px;font-weight:700;
+    background:var(--brand);color:#fff;
+  }
+  .level-name{font-size:20px;font-weight:600;margin:4px 0 2px;}
+  .level-desc{color:var(--ink-soft);font-size:15px;margin-bottom:24px;max-width:60ch;}
+  .critical-note{
+    border:1px solid var(--danger);background:#FCEEEC;color:#8A2A22;padding:14px 16px;
+    border-radius:var(--radius);font-size:14px;margin-bottom:24px;
+  }
+  .bars{margin-bottom:28px;}
+  .bar-row{margin-bottom:14px;}
+  .bar-label{display:flex;justify-content:space-between;font-size:13.5px;margin-bottom:5px;}
+  .bar-track{height:8px;background:var(--line);border-radius:4px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--brand);border-radius:4px;}
+  .subsection-title{font-size:12.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--brand-deep);margin:32px 0 12px;}
+  .callout{background:#F3F0FF;border-radius:var(--radius);padding:16px 18px;font-size:14.5px;color:var(--ink);margin-bottom:20px;}
+  .meta-line{font-size:13px;color:var(--ink-soft);margin-bottom:4px;}
+  footer.note{font-size:12.5px;color:var(--ink-soft);margin-top:40px;border-top:1px solid var(--line);padding-top:16px;}
+  @media (max-width:600px){
+    .hero h1{font-size:29px;}
+    .stat-row{flex-wrap:wrap;}
+    .stat{flex:1 1 50%;border-bottom:1px solid var(--line);}
+    .score-num{font-size:48px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SCREEN: LANDING ============ -->
+  <section id="screen-landing" class="screen active">
+    <div class="topbar">
+      <img src="avecgazelle-logo.png" alt="AVECGAZELLE" class="brand-logo">
+    </div>
+    <div class="hero">
+      <div class="eyebrow">Workplace Effectiveness Diagnostic</div>
+      <h1>Find out where you stand before you start training.</h1>
+      <p class="lede">A short, scenario-based diagnostic that measures how you'd actually handle real workplace situations — not just whether you know the definitions. Your result becomes the starting point of your personal development plan.</p>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><span class="num">~40</span><span class="lab">minutes, one sitting</span></div>
+      <div class="stat"><span class="num">32</span><span class="lab">scenario &amp; readiness items</span></div>
+      <div class="stat"><span class="num">Instant</span><span class="lab">result on completion</span></div>
+    </div>
+    <div class="card">
+      <label class="field-label" for="cname">Full name</label>
+      <input type="text" id="cname" placeholder="e.g. Amaka Obi">
+      <label class="field-label" for="cemail">Email address</label>
+      <input type="email" id="cemail" placeholder="you@example.com">
+      <ul class="info-list">
+        <li><b>1</b> Situational judgement — 22 realistic workplace scenarios, choose the most effective response.</li>
+        <li><b>2</b> Self-reflection — 15 short statements about how you generally work.</li>
+        <li><b>3</b> Digital &amp; remote-work readiness — 10 quick practical questions.</li>
+      </ul>
+    </div>
+    <div class="card" style="font-size:14px;color:var(--ink-soft);">
+      There are no trick questions and no perfect score expected — this is diagnostic, not a pass/fail exam. Answer as you honestly would at work, not as you think sounds best. Once started, a timer keeps the whole assessment to one sitting; you'll always see time remaining and a warning before it runs out.
+      <br><br>
+      Need more time due to a disability or because this isn't your first language? <a class="link-quiet" id="accom-link">Request an accommodation</a> before you begin — extended time and alternate formats are available on request.
+    </div>
+    <div class="btn-row" style="justify-content:flex-end;">
+      <button class="btn" id="start-btn">Begin assessment</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN: ACCOMMODATIONS ============ -->
+  <section id="screen-accom" class="screen">
+    <div class="topbar"><img src="avecgazelle-logo.png" alt="AVECGAZELLE" class="brand-logo"></div>
+    <h2>Accommodations</h2>
+    <p style="color:var(--ink-soft);max-width:60ch;">We want your result to reflect your actual workplace judgement, not how well this format suits you. If any of the following apply, contact us at <b>contact@avecgazelle.com.ng</b> before you start, and we'll arrange it:</p>
+    <ul class="info-list">
+      <li><b>·</b> Extended time (no penalty — just let us know roughly how much more you'd like)</li>
+      <li><b>·</b> This isn't your first or strongest language</li>
+      <li><b>·</b> You'd prefer questions read aloud or in a larger text size</li>
+      <li><b>·</b> A screen-reader-compatible or audio version</li>
+      <li><b>·</b> Any other access need not listed here — just ask</li>
+    </ul>
+    <div class="btn-row" style="justify-content:flex-start;">
+      <button class="btn secondary" onclick="showScreen('landing')">Back</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN: TEST ============ -->
+  <section id="screen-test" class="screen">
+    <div class="topbar">
+      <img src="avecgazelle-logo.png" alt="AVECGAZELLE" class="brand-logo">
+      <div class="timer" id="timer">45:00</div>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+    <div class="section-label" id="q-section-label">Section</div>
+    <div class="q-count" id="q-count">Question 1</div>
+    <div id="q-body"></div>
+    <div class="btn-row">
+      <button class="btn secondary" id="back-btn" onclick="prevQuestion()">Back</button>
+      <button class="btn" id="next-btn" onclick="nextQuestion()" disabled>Next</button>
+    </div>
+  </section>
+
+  <!-- ============ SCREEN: RESULTS ============ -->
+  <section id="screen-results" class="screen">
+    <div class="topbar"><img src="avecgazelle-logo.png" alt="AVECGAZELLE" class="brand-logo"></div>
+    <div class="meta-line" id="res-candidate"></div>
+    <div class="meta-line" id="res-timestamp"></div>
+    <div class="score-block">
+      <span class="score-num" id="res-score">--</span>
+      <span class="level-badge" id="res-level-badge">Level</span>
+    </div>
+    <div class="level-name" id="res-level-name"></div>
+    <p class="level-desc" id="res-level-desc"></p>
+    <div id="res-critical"></div>
+
+    <div class="subsection-title">Competency breakdown</div>
+    <div class="bars" id="res-bars"></div>
+
+    <div class="subsection-title">Self-awareness check</div>
+    <div class="callout" id="res-selfcheck"></div>
+
+    <div class="subsection-title">Recommended next step</div>
+    <div class="callout" id="res-nextstep"></div>
+
+    <div class="btn-row" style="justify-content:flex-start;gap:14px;">
+      <button class="btn" onclick="window.print()">Print / save as PDF</button>
+      <button class="btn secondary" id="email-btn">Email result to AVECGAZELLE</button>
+    </div>
+    <p id="res-sync-status" style="font-size:12.5px;color:var(--ink-soft);margin-top:10px;"></p>
+    <footer class="note">
+      This diagnostic covers the ASSESS stage of the AVECGAZELLE pathway (Assess → Train → Simulate → Prove → Recommend). Your score and level here are a starting baseline, not a final placement decision — Levels 4 and 5 are confirmed after the in-person/assessor-led Simulation stage.
+    </footer>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   DATA
+   ============================================================ */
+const SJT = [
+ {id:'s1',cluster:'SELF',points:3,scenario:"You work at a growing e-commerce startup. At 9am your manager asks you to update the product catalogue by noon. At 10am a client escalation arrives marked \u201curgent\u201d from a customer who hasn't received a paid order. At 10:30am a colleague asks for help formatting a slide deck due \u201csometime this week.\u201d",
+   options:["Finish the catalogue update first since it was assigned first, then handle the client issue after noon.",
+   "Quickly assess the client issue's real urgency, address or escalate it promptly, then continue the catalogue update, and tell your colleague you'll help later this week.",
+   "Help your colleague first since it's a quick task, then move to the catalogue and client issue.",
+   "Ask your manager to decide the order for you before doing anything."], correct:1},
+ {id:'s2',cluster:'SELF',points:2,scenario:"Two days after sending it, you realise a client invoice you prepared has an error that understates the amount owed.",
+   options:["Wait to see if the client notices; if not, let it go since raising it might embarrass you.",
+   "Quietly send a corrected invoice without mentioning the original error.",
+   "Immediately inform your supervisor and the client of the error, apologise briefly, and send a corrected invoice.",
+   "Blame the accounting software for miscalculating the figure when you report it."], correct:2, critical:true, criticalFail:[0,1,3]},
+ {id:'s3',cluster:'SELF',points:2,scenario:"You're going to miss a Friday deadline for a shared project because a dependency from another team member came in late. It's Wednesday and you already know you'll be late.",
+   options:["Say nothing until Friday and explain the delay when you submit late.",
+   "Send a brief message on Wednesday explaining the delay, the reason, and a realistic new date.",
+   "Send a long, detailed message that mostly explains why the other team member is at fault.",
+   "Ask a colleague to inform the manager on your behalf so it doesn't come directly from you."], correct:1, critical:true, criticalFail:[0]},
+ {id:'s4',cluster:'COG',points:4,scenario:"While processing routine payments for a small business, you notice what looks like a duplicate payment about to go out to the same vendor. Your supervisor is unreachable for hours and the payment is due to be sent in 30 minutes.",
+   options:["Send the payment as scheduled since you weren't explicitly told to hold it.",
+   "Hold the payment, document what you noticed, and flag it clearly for your supervisor's urgent attention as soon as they're reachable.",
+   "Cancel the vendor relationship altogether to be safe.",
+   "Ask a colleague in an unrelated department to make the call for you."], correct:1},
+ {id:'s5',cluster:'COG',points:4,scenario:"A colleague shares a report claiming \u201csales dropped because of the weather last month,\u201d based only on the fact that it rained more than usual and sales were lower.",
+   options:["Accept the explanation, since the timing lines up.",
+   "Point out that the two events lining up doesn't confirm the weather caused the drop, and suggest checking other possible factors before concluding.",
+   "Assume the report must be wrong entirely and dismiss it.",
+   "Ignore the report and form your own opinion without discussing it."], correct:1},
+ {id:'s6',cluster:'COG',points:4,scenario:"You must choose between two vendors for an urgent purchase needed within the hour. One is slightly more expensive but has a proven track record; the other is cheaper but you have no prior experience with them.",
+   options:["Delay the decision until you can research both vendors fully.",
+   "Choose the cheaper option automatically, since cost is the main concern.",
+   "Make a reasoned choice based on the information available, weighing cost against reliability risk given the urgency, and document your reasoning.",
+   "Ask someone unrelated to the project to decide for you."], correct:2},
+ {id:'s7',cluster:'INTER',points:3,scenario:"A colleague on your remote project team consistently changes shared documents without notifying anyone, which has caused confusion twice this month.",
+   options:["Say nothing, but quietly redo their changes each time to avoid a confrontation.",
+   "Message the wider team group to point out that \u201csome people\u201d don't communicate changes properly.",
+   "Speak to the colleague directly and privately, describe the specific impact, and agree on a simple notification process going forward.",
+   "Escalate immediately to the project manager without speaking to the colleague first."], correct:2},
+ {id:'s8',cluster:'INTER',points:3,scenario:"A teammate seems unusually short and irritable in a group call, snapping slightly at a minor comment you made.",
+   options:["Snap back with an equally short response.",
+   "Ignore it completely and continue the meeting as if nothing happened, making no adjustment.",
+   "Stay calm, don't take it personally in the moment, and check in with them privately afterward to see if something's wrong.",
+   "Publicly point out that they're being rude in front of the group."], correct:2},
+ {id:'s9',cluster:'INTER',points:2,scenario:"In a group project, you finish your individual part early while two teammates are still working on theirs and seem stretched.",
+   options:["Submit your part and wait, since your responsibility is done.",
+   "Check in with your teammates, offer to help with a specific part of their work if useful, without taking over their tasks entirely.",
+   "Redo their work yourself without asking, since you have time.",
+   "Point out to the group that you finished first."], correct:1},
+ {id:'s10',cluster:'ADAPT',points:3,scenario:"You're managing a small in-person event for a startup's product launch. The supervisor overseeing logistics is stuck in traffic and unreachable, and the venue's projector isn't working thirty minutes before guests arrive.",
+   options:["Wait for your supervisor to arrive before doing anything, since projector issues weren't part of your assigned role.",
+   "Try reasonable fixes yourself (check cables, restart the device, ask venue staff for a backup) and inform your supervisor as soon as they're reachable.",
+   "Cancel the launch presentation portion of the event without telling anyone.",
+   "Ask a guest who looks technical to fix it."], correct:1},
+ {id:'s11',cluster:'ADAPT',points:4,scenario:"While supporting a small business's social media, you notice an easy way to reword an upcoming public post to sound clearer. The post is scheduled in an hour and your supervisor is temporarily unavailable.",
+   options:["Change the wording yourself and publish it immediately without telling anyone.",
+   "Do nothing since editing content isn't explicitly part of your role.",
+   "Prepare the suggested edit, message your supervisor with the change and reasoning, and hold the post until you hear back if there's time, or use your best judgement only if the deadline truly can't wait.",
+   "Ask a friend outside the organisation what they think the wording should be."], correct:2},
+ {id:'s12',cluster:'ADAPT',points:3,scenario:"Midway through a two-week project, your client changes the requirements significantly, meaning some of your completed work is no longer needed.",
+   options:["Refuse to make the change since it wasn't part of the original agreement.",
+   "Express frustration to the client about the wasted work before proceeding.",
+   "Acknowledge the change, quickly assess what can be reused, adjust the plan, and clarify any impact on timeline or scope with the client.",
+   "Continue with the original plan since it's already mostly done."], correct:2},
+ {id:'s13',cluster:'ADAPT',points:3,scenario:"A client rejects a proposal you worked hard on for two weeks, giving fairly blunt feedback about what didn't work.",
+   options:["Take a short time to process the disappointment, then review the specific feedback and use it to revise the proposal or approach for next time.",
+   "Avoid taking on similar work again to prevent another rejection.",
+   "Argue with the client about why the original proposal was actually good.",
+   "Dwell on the rejection and let it affect your work on unrelated tasks for the following days."], correct:0},
+ {id:'s14',cluster:'COMM',points:3,scenario:"Your supervisor tells you, \u201cGet the report ready for the partners.\u201d She doesn't specify format, length, or deadline before rushing into another meeting.",
+   options:["Wait until she's free again before starting anything.",
+   "Produce a full report using your own best judgement and submit it without checking anything, since she was busy.",
+   "Ask a brief, specific clarifying question when you can catch her (or via message), and in the meantime start on the parts you're confident about.",
+   "Ask a colleague to guess what she probably meant and follow their guess instead."], correct:2},
+ {id:'s15',cluster:'COMM',points:2,scenario:"You sent a proposal to a potential client four days ago and haven't heard back. Your organisation is hoping to close the deal this month.",
+   options:["Assume they're not interested and move on without following up.",
+   "Send a brief, polite follow-up message checking if they had a chance to review it and offering to answer questions.",
+   "Call repeatedly across the day until they answer.",
+   "Wait indefinitely without following up, to avoid seeming pushy."], correct:1},
+ {id:'s16',cluster:'PREC',points:2,scenario:"You've just finished a spreadsheet tracking expenses for a small NGO project before submitting it to a donor. You have fifteen minutes before the deadline.",
+   options:["Submit it immediately since it's already complete.",
+   "Quickly scan only the final total, since that's the number that matters most.",
+   "Review key figures, formulas, and formatting for errors, checking especially anything manually entered, before submitting.",
+   "Ask a colleague to check it for you, without reviewing it yourself first."], correct:2},
+ {id:'s17',cluster:'PREC',points:2,scenario:"You need to share a large document with three colleagues so they can all comment on specific sections and see each other's changes.",
+   options:["Email the document as an attachment to each person separately.",
+   "Print the document and distribute physical copies for handwritten comments.",
+   "Upload it to a shared drive/cloud document, share appropriate access, and use the built-in commenting feature so everyone can see and respond in one place.",
+   "Ask each person to write comments separately and send them to you to consolidate manually."], correct:2},
+ {id:'s18',cluster:'COND',points:3,scenario:"While supporting a startup founder, you see draft financial figures showing the company is close to running out of cash. A friend, who is a supplier to the same company, casually asks if the business is doing okay.",
+   options:["Reassure your friend that everything is fine, since you don't want to worry them.",
+   "Tell your friend the specific figures you saw, since they're a supplier and might be affected.",
+   "Decline to discuss the company's internal financial details, and redirect your friend to ask the founder directly if they have concerns.",
+   "Tell your friend \u201coff the record\u201d what you saw, asking them to keep it private."], correct:2, critical:true, criticalFail:[1,3]},
+ {id:'s19',cluster:'COND',points:2,scenario:"You're in a weekly virtual team meeting with colleagues across three countries. The discussion has drifted off-topic for ten minutes and the agenda item you need input on hasn't been addressed.",
+   options:["Stay silent and hope it gets addressed eventually.",
+   "Politely note the time, and ask if the group can return to the agenda item you need input on.",
+   "Send a private message to the meeting host complaining about the drift, without saying anything in the meeting.",
+   "Interrupt abruptly and tell the group they're wasting time."], correct:1},
+ {id:'s20',cluster:'COND',points:3,scenario:"A customer writes an angry message saying their delivery is three days late, including several exclamation points and frustrated language.",
+   options:["Respond defensively, explaining that delays are normal and out of your control.",
+   "Ignore the tone and reply with only the tracking number, no acknowledgement of their frustration.",
+   "Acknowledge their frustration, apologise for the delay, provide a clear update, and outline the next concrete step.",
+   "Forward the message to a manager without responding to the customer at all."], correct:2},
+ {id:'s21',cluster:'COND',points:4,scenario:"You're asked to submit a report and notice that adjusting one figure slightly would make the results look better to a funder, and no one would likely ever check it.",
+   options:["Adjust the figure slightly, since it's a small change and unlikely to be noticed.",
+   "Report the figure accurately, even though the results look less impressive.",
+   "Ask a colleague if they think it's okay to adjust it before deciding.",
+   "Leave the figure out of the report entirely to avoid the issue."], correct:1, critical:true, criticalFail:[0]},
+ {id:'s22',cluster:'COND',points:3,scenario:"You've noticed a pattern over several weeks where a colleague's repeated errors are affecting a client relationship, but you don't have the authority to address it directly with them.",
+   options:["Say nothing, since it's not your responsibility.",
+   "Confront the colleague directly and firmly in front of others so the issue is taken seriously.",
+   "Raise the pattern factually and calmly with your supervisor, focusing on the observed impact rather than personal criticism.",
+   "Mention it anonymously in a general team suggestion box and leave it at that."], correct:2}
+];
+
+const DIGITAL = [
+ {id:'d1',points:3,scenario:"You're emailing a client for the first time about a new project. Which subject line and opening is most appropriate?",
+   options:["\u201chey\u201d — \u201cwassup, so about that thing\u2026\u201d",
+   "\u201cProject Kickoff — [Project Name]\u201d — \u201cDear [Name], I'm reaching out to confirm the details of our upcoming project.\u201d",
+   "No subject line — \u201cSee attached.\u201d",
+   "\u201cURGENT!!!\u201d — \u201cYou need to read this now.\u201d"], correct:1},
+ {id:'d2',points:3,scenario:"You're scheduling a recurring meeting with colleagues in two other countries. What's the most professional approach?",
+   options:["Pick a time that's convenient for you and send the invite without checking others' time zones.",
+   "Check each participant's local time zone, choose a reasonably fair time, and state the time zone clearly in the invite.",
+   "Ask everyone to individually figure out what time it is for them.",
+   "Schedule it at your convenience and let people reschedule if it doesn't work."], correct:1, critical:true, criticalFail:[0]},
+ {id:'d3',points:3,scenario:"You're about to join an important video call from home. What's the most professional preparation?",
+   options:["Join a few minutes early, test your camera/mic, mute when not speaking, and have a tidy or blurred background.",
+   "Join exactly when the call starts, camera off by default, and multitask in another tab throughout.",
+   "Join late since the beginning of most calls is just small talk.",
+   "Join from a noisy public place without headphones, since it's a short call."], correct:0},
+ {id:'d4',points:3,scenario:"You're saving several versions of a report over a few days of edits. What's the best file-naming approach?",
+   options:["Report.docx, Report.docx, Report.docx (saved to different folders)",
+   "final.docx, final2.docx, finalFINAL.docx",
+   "Report_2025-09-07_v1.docx, Report_2025-09-08_v2.docx, with a clear date and version number",
+   "asdfgh.docx"], correct:2},
+ {id:'d5',points:3,scenario:"A colleague suggests you both use the same simple password across your work accounts \u201cso it's easier to remember and share when needed.\u201d",
+   options:["Agree — sharing one password between two people is more efficient.",
+   "Decline, and use a unique password for each account, enabling two-factor authentication where available.",
+   "Agree, but only tell one other trusted person.",
+   "Use the same password everywhere but add a number at the end for one account."], correct:1, critical:true, criticalFail:[0]},
+ {id:'d6',points:3,scenario:"Your small team keeps losing track of who's doing what because tasks are only discussed in scattered chat messages. What's the most effective fix?",
+   options:["Ask everyone to try to remember what they agreed to.",
+   "Set up a shared task board (even a free, simple one) where tasks, owners, and deadlines are visible to everyone.",
+   "Have one person try to manually track everything in their personal notebook.",
+   "Continue as is, since adding a new tool takes time to learn."], correct:1},
+ {id:'d7',points:3,scenario:"Your internet disconnects five minutes into an important client video call.",
+   options:["Wait silently and hope it reconnects, without informing anyone.",
+   "Reconnect as quickly as possible, and if you have another way to reach someone on the call (phone, message), briefly explain what happened once back.",
+   "Give up on the call entirely and email an apology days later.",
+   "Blame the client's connection when you rejoin, regardless of what actually happened."], correct:1},
+ {id:'d8',points:3,scenario:"You receive an email that looks like it's from your bank, asking you to \u201cverify your account\u201d by clicking a link and entering your login details.",
+   options:["Click the link and enter your details quickly, since it looks official.",
+   "Don't click the link — instead, check the sender's actual email address, and if in doubt, go directly to the bank's known website or contact them directly.",
+   "Forward it to a colleague and ask them to click it for you.",
+   "Reply to the email asking if it's legitimate."], correct:1, critical:true, criticalFail:[0]},
+ {id:'d9',points:3,scenario:"You need to work on a shared document with a teammate, but you're not sure who has the most recent version.",
+   options:["Keep separate personal copies and merge them manually later by comparing text.",
+   "Work directly in one shared, cloud-based version so everyone always sees the current version and edit history.",
+   "Ask your teammate to email you their copy every time they make a change.",
+   "Only one person should ever be allowed to open the document at a time, checked by asking around."], correct:1},
+ {id:'d10',points:3,scenario:"You're asked to share a confidential client contract with a new team member who needs it for their work.",
+   options:["Post it in a large, general team channel so everyone has access if they ever need it.",
+   "Share it directly and only with the specific person who needs it, using an access-controlled link where possible, and remind them it's confidential.",
+   "Print it and leave it on a shared desk for them to pick up whenever convenient.",
+   "Forward it from your personal email to make it quick and simple."], correct:1, critical:true, criticalFail:[0]}
+];
+
+/* ============================================================
+   RESULT SYNC — paste your Google Apps Script Web App URL below
+   to have every completed result logged to a Google Sheet.
+   Leave blank to run the site with no centralised logging at all.
+   See the setup guide in README-results-sheet.md for how to get this URL.
+   ============================================================ */
+const SHEET_WEBHOOK_URL = ''; // e.g. 'https://script.google.com/macros/s/XXXXXXXX/exec'
+
+const SELFQ = [
+ "I can plan my work for the week without needing someone else to structure it for me.",
+ "When priorities change suddenly, I can adjust my plan without becoming overwhelmed.",
+ "I communicate clearly in writing, even when explaining something complicated.",
+ "I feel comfortable speaking up in a meeting, even if my view differs from others.",
+ "When I make a mistake, I tell the people affected as soon as I notice it.",
+ "I follow through on commitments, even when no one is checking on me.",
+ "I can accept critical feedback without feeling like it's a personal attack.",
+ "After receiving feedback, I actually change how I do things, not just agree in the moment.",
+ "I work well with people whose working style is different from mine.",
+ "I'm comfortable raising a disagreement with a colleague directly and respectfully.",
+ "I adjust quickly when instructions or requirements change midway through a task.",
+ "I feel confident taking on a task I haven't done before, as long as I can ask questions along the way.",
+ "I'm comfortable using shared digital tools (documents, calendars, messaging platforms) for daily work.",
+ "When faced with an unclear problem, I try to break it down before asking for help.",
+ "I keep sensitive information private, even when sharing it might seem harmless."
+];
+
+const CLUSTER_META = {
+  COMM:{label:'Professional Communication'},
+  COG:{label:'Cognitive & Decision-Making'},
+  SELF:{label:'Self-Management'},
+  INTER:{label:'Interpersonal Effectiveness'},
+  ADAPT:{label:'Adaptability & Growth'},
+  PREC:{label:'Precision & Detail'},
+  COND:{label:'Professional Conduct & Ethics'},
+  DIGI:{label:'Digital & Remote-Work Readiness'}
+};
+
+const LEVELS = [
+ {min:0,max:40,name:'Level 1 — Workplace Foundation Required',
+  desc:"Foundational workplace habits (communication, reliability, planning) need deliberate building before simulation-based work will be productive.",
+  support:"Close, structured supervision and the full Workplace Effectiveness curriculum before any client-facing task.",
+  next:"Begin with Workplace Effectiveness Core. Revisit this diagnostic after completing it.",
+  sim:false, placement:false, employerRec:false},
+ {min:41,max:60,name:'Level 2 — Developing Workplace Readiness',
+  desc:"Some sound judgement is visible, but it's inconsistent across situations — particularly under pressure or ambiguity.",
+  support:"Regular check-ins and scaffolded practice tasks; not yet ready for unsupervised real-client work.",
+  next:"Complete Workplace Effectiveness Core with a focus on your lowest-scoring clusters below, then reassess.",
+  sim:false, placement:false, employerRec:false},
+ {min:61,max:75,name:'Level 3 — Ready for Supervised Work Simulation',
+  desc:"Solid, fairly consistent workplace judgement across most situations, with clear pockets to strengthen.",
+  support:"Light, periodic supervision — suitable for structured simulations and bounded, mentored real-work tasks.",
+  next:"Proceed to the assessor-led Simulation stage with light supervision.",
+  sim:true, placement:'supervised', employerRec:false},
+ {min:76,max:90,name:'Level 4 — Workplace Ready',
+  desc:"Consistently sound judgement, communication, and accountability across almost all scenarios tested.",
+  support:"Minimal supervision expected; standard onboarding is sufficient.",
+  next:"Proceed to Simulation stage; strong candidate for internship/placement matching on completion.",
+  sim:true, placement:'ready', employerRec:true},
+ {min:91,max:100,name:'Level 5 — Advanced Workplace Effectiveness',
+  desc:"Exceptionally consistent, sound judgement across the full range of workplace situations tested.",
+  support:"Independent work with standard check-ins; potential candidate for early leadership/coordination exposure.",
+  next:"Fast-track through Simulation stage; strong candidate for employer recommendation and leadership-track mentoring.",
+  sim:true, placement:'ready', employerRec:true}
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const TOTAL_SECONDS = 45*60;
+let secondsLeft = TOTAL_SECONDS;
+let timerHandle = null;
+
+const queue = []; // flattened list of {type:'sjt'|'digital'|'self', data, index}
+SJT.forEach((q,i)=>queue.push({type:'sjt', data:q, sectionLabel:'Section 1 — Situational Judgement', idx:i, of:SJT.length}));
+SELFQ.forEach((q,i)=>queue.push({type:'self', data:q, sectionLabel:'Section 2 — Self-Reflection', idx:i, of:SELFQ.length}));
+DIGITAL.forEach((q,i)=>queue.push({type:'digital', data:q, sectionLabel:'Section 3 — Digital & Remote-Work Readiness', idx:i, of:DIGITAL.length}));
+
+let cursor = 0;
+const responses = new Array(queue.length).fill(null);
+
+/* ============================================================
+   NAVIGATION
+   ============================================================ */
+function showScreen(name){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+}
+
+document.getElementById('accom-link').addEventListener('click', ()=>showScreen('accom'));
+
+document.getElementById('start-btn').addEventListener('click', ()=>{
+  showScreen('test');
+  startTimer();
+  renderQuestion();
+});
+
+function startTimer(){
+  timerHandle = setInterval(()=>{
+    secondsLeft--;
+    const m = Math.floor(secondsLeft/60), s = secondsLeft%60;
+    const el = document.getElementById('timer');
+    el.textContent = m+':'+String(s).padStart(2,'0');
+    if(secondsLeft<=300) el.classList.add('low');
+    if(secondsLeft<=0){
+      clearInterval(timerHandle);
+      finishAssessment();
+    }
+  },1000);
+}
+
+function renderQuestion(){
+  const item = queue[cursor];
+  document.getElementById('q-section-label').textContent = item.sectionLabel;
+  document.getElementById('q-count').textContent = 'Question '+(item.idx+1)+' of '+item.of+' in this section \u00b7 Overall '+(cursor+1)+'/'+queue.length;
+  document.getElementById('progress-fill').style.width = Math.round(((cursor)/queue.length)*100)+'%';
+
+  const body = document.getElementById('q-body');
+  const saved = responses[cursor];
+
+  if(item.type==='sjt' || item.type==='digital'){
+    const d = item.data;
+    body.innerHTML = `<p class="scenario">${d.scenario}</p><div class="options" id="opt-wrap"></div>`;
+    const wrap = document.getElementById('opt-wrap');
+    d.options.forEach((optText,i)=>{
+      const row = document.createElement('label');
+      row.className = 'opt'+(saved===i?' selected':'');
+      row.innerHTML = `<input type="radio" name="opt" value="${i}" ${saved===i?'checked':''}><span class="opt-text">${optText}</span>`;
+      row.addEventListener('click', ()=>selectOption(i));
+      wrap.appendChild(row);
+    });
+  } else {
+    // self-assessment likert
+    body.innerHTML = `<p class="scenario">${item.data}</p>
+      <div class="likert-labels"><span>Strongly disagree</span><span>Strongly agree</span></div>
+      <div class="likert-row" id="likert-wrap"></div>`;
+    const wrap = document.getElementById('likert-wrap');
+    for(let i=1;i<=5;i++){
+      const el = document.createElement('div');
+      el.className = 'likert-opt'+(saved===i?' selected':'');
+      el.textContent = i;
+      el.addEventListener('click', ()=>selectOption(i));
+      wrap.appendChild(el);
+    }
+  }
+
+  document.getElementById('back-btn').disabled = cursor===0;
+  document.getElementById('back-btn').style.visibility = cursor===0?'hidden':'visible';
+  document.getElementById('next-btn').disabled = saved===null;
+  document.getElementById('next-btn').textContent = cursor===queue.length-1 ? 'Finish & see result' : 'Next';
+}
+
+function selectOption(value){
+  responses[cursor] = value;
+  document.getElementById('next-btn').disabled = false;
+  renderQuestion();
+}
+
+function nextQuestion(){
+  if(responses[cursor]===null) return;
+  if(cursor===queue.length-1){
+    clearInterval(timerHandle);
+    finishAssessment();
+    return;
+  }
+  cursor++;
+  renderQuestion();
+}
+function prevQuestion(){
+  if(cursor===0) return;
+  cursor--;
+  renderQuestion();
+}
+
+/* ============================================================
+   SCORING
+   ============================================================ */
+function finishAssessment(){
+  const clusterRaw = {}, clusterMax = {};
+  Object.keys(CLUSTER_META).forEach(c=>{clusterRaw[c]=0; clusterMax[c]=0;});
+
+  let sjtRaw=0, sjtMax=0, digiRaw=0, digiMax=0;
+  let criticalFlags = [];
+  let selfSum=0, selfCount=0;
+
+  queue.forEach((item,i)=>{
+    const resp = responses[i];
+    if(item.type==='sjt'){
+      const d = item.data;
+      sjtMax += d.points;
+      clusterMax[d.cluster]+=d.points;
+      if(resp===d.correct){ sjtRaw+=d.points; clusterRaw[d.cluster]+=d.points; }
+      if(d.critical && resp!==null && d.criticalFail && d.criticalFail.includes(resp)){
+        criticalFlags.push(d.id);
+      }
+    } else if(item.type==='digital'){
+      const d = item.data;
+      digiMax += d.points;
+      clusterMax['DIGI']+=d.points;
+      if(resp===d.correct){ digiRaw+=d.points; clusterRaw['DIGI']+=d.points; }
+      if(d.critical && resp!==null && d.criticalFail && d.criticalFail.includes(resp)){
+        criticalFlags.push(d.id);
+      }
+    } else {
+      selfSum += (resp||3); selfCount++;
+    }
+  });
+
+  const overall = Math.round((sjtRaw/sjtMax)*70 + (digiRaw/digiMax)*30);
+  let level = LEVELS.find(l=>overall>=l.min && overall<=l.max) || LEVELS[0];
+  let capped = false;
+  if(criticalFlags.length>0 && LEVELS.indexOf(level) > 2){
+    level = LEVELS[2]; // cap at Level 3
+    capped = true;
+  }
+
+  const selfPct = selfCount ? ((selfSum/selfCount)-1)/4*100 : 0;
+  const diff = selfPct - overall;
+  let selfNote;
+  if(diff>15){
+    selfNote = "Your own self-rating came in notably higher than what this diagnostic actually observed. That's common and not a red flag on its own — it usually just means some areas below need more focused attention than expected. Your development plan is built to close exactly that gap.";
+  } else if(diff<-15){
+    selfNote = "You rated yourself more cautiously than your demonstrated performance here suggests. Worth naming in your first mentorship conversation — you may be more ready than you're giving yourself credit for.";
+  } else {
+    selfNote = "Your self-rating closely matches what this diagnostic observed — a good sign of self-awareness, which itself is a workplace strength.";
+  }
+
+  renderResults({overall, level, capped, clusterRaw, clusterMax, selfNote, criticalCount:criticalFlags.length});
+  showScreen('results');
+}
+
+function renderResults({overall, level, capped, clusterRaw, clusterMax, selfNote, criticalCount}){
+  const name = document.getElementById('cname').value.trim() || 'Candidate';
+  const email = document.getElementById('cemail').value.trim();
+  const now = new Date();
+
+  document.getElementById('res-candidate').textContent = name + (email? ' \u00b7 '+email : '');
+  document.getElementById('res-timestamp').textContent = 'Completed ' + now.toLocaleString();
+  document.getElementById('res-score').textContent = overall;
+  document.getElementById('res-level-badge').textContent = level.name.split('\u2014')[0].trim();
+  document.getElementById('res-level-name').textContent = level.name.split('\u2014')[1].trim();
+  document.getElementById('res-level-desc').textContent = level.desc;
+
+  const critEl = document.getElementById('res-critical');
+  if(criticalCount>0){
+    critEl.innerHTML = `<div class="critical-note"><b>Flag for assessor review:</b> at least one response in a critical area (professional ethics, confidentiality, or reliability) matched a pattern we ask a human assessor to review before this result is used for any employer recommendation${capped?', and the level shown above has been capped accordingly regardless of overall score':''}.</div>`;
+  } else {
+    critEl.innerHTML = '';
+  }
+
+  const barsEl = document.getElementById('res-bars');
+  barsEl.innerHTML = '';
+  Object.keys(CLUSTER_META).forEach(c=>{
+    const max = clusterMax[c];
+    if(!max) return; // skip if no items in this cluster (shouldn't happen)
+    const pct = Math.round((clusterRaw[c]/max)*100);
+    const row = document.createElement('div');
+    row.className='bar-row';
+    row.innerHTML = `<div class="bar-label"><span>${CLUSTER_META[c].label}</span><span>${pct}%</span></div>
+      <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>`;
+    barsEl.appendChild(row);
+  });
+
+  document.getElementById('res-selfcheck').textContent = selfNote;
+
+  const nextEl = document.getElementById('res-nextstep');
+  nextEl.innerHTML = `<b>${level.next}</b><br><br>
+    Support level: ${level.support}<br>
+    Simulation-stage ready: ${level.sim ? 'Yes' : 'Not yet'}<br>
+    Placement pathway: ${level.placement===false ? 'Not yet' : (level.placement==='supervised' ? 'Supervised placement only' : 'Ready for placement matching')}<br>
+    Employer recommendation eligible: ${level.employerRec ? 'Yes, pending Simulation stage' : 'Not yet'}`;
+
+  window._resultSummary = `AVECGAZELLE Workplace Effectiveness Diagnostic\nCandidate: ${name} (${email})\nCompleted: ${now.toLocaleString()}\nOverall score: ${overall}/100\nLevel: ${level.name}\n${criticalCount>0 ? 'CRITICAL REVIEW FLAG: yes\\n' : ''}\nCompetency breakdown:\n` +
+    Object.keys(CLUSTER_META).map(c=> clusterMax[c] ? `- ${CLUSTER_META[c].label}: ${Math.round((clusterRaw[c]/clusterMax[c])*100)}%` : null).filter(Boolean).join('\n');
+
+  const clusterPct = {};
+  Object.keys(CLUSTER_META).forEach(c=>{
+    clusterPct[c] = clusterMax[c] ? Math.round((clusterRaw[c]/clusterMax[c])*100) : null;
+  });
+  syncResultToSheet({
+    timestamp: now.toISOString(),
+    name, email,
+    overall, level: level.name,
+    criticalFlag: criticalCount>0 ? 'YES' : 'no',
+    clusters: clusterPct
+  });
+}
+
+function syncResultToSheet(payload){
+  const statusEl = document.getElementById('res-sync-status');
+  if(!SHEET_WEBHOOK_URL){
+    if(statusEl) statusEl.textContent = 'Result not centrally logged (no results sheet configured) — use "Email result" below to send it in.';
+    return;
+  }
+  if(statusEl) statusEl.textContent = 'Saving your result to AVECGAZELLE\u2019s records\u2026';
+  fetch(SHEET_WEBHOOK_URL, {
+    method:'POST',
+    mode:'no-cors', // Apps Script web apps don't return readable CORS headers; this still delivers the request
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  }).then(()=>{
+    if(statusEl) statusEl.textContent = 'Result saved. (If this is your first time seeing this message and results aren\u2019t appearing in the sheet, double-check the deployment URL and access settings.)';
+  }).catch(()=>{
+    if(statusEl) statusEl.textContent = 'Could not reach the results sheet (offline or misconfigured) — please use "Email result" below as a backup.';
+  });
+}
+
+document.getElementById('email-btn').addEventListener('click', ()=>{
+  const subject = encodeURIComponent('Workplace Effectiveness Diagnostic result');
+  const bodyText = encodeURIComponent(window._resultSummary || '');
+  window.location.href = `mailto:contact@avecgazelle.com.ng?subject=${subject}&body=${bodyText}`;
+});
+</script>
+</body>
+</html>
